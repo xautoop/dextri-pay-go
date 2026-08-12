@@ -3,6 +3,20 @@
 Go SDK for the Dextri Pay partner API. The module path is temporary until the
 public repository is chosen.
 
+For local integration before publication, add the standalone repository with a
+Go workspace or a temporary `replace` directive:
+
+```go
+require dextri-pay-go v0.0.0
+
+replace dextri-pay-go => ../dextri-pay-go
+```
+
+After the permanent repository is chosen, the module path will be changed once
+and released as `v1.0.0`; partner projects will then install that public module
+with `go get`. Do not publish a version while the temporary module path is in
+use.
+
 ```go
 client, err := dextripay.NewClient(
     "https://pay-api.dextri.com",
