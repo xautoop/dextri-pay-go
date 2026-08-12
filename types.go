@@ -89,44 +89,70 @@ type UserBalances struct {
 }
 
 type ConversionMarket struct {
-	AppID        string    `json:"app_id"`
-	Pair         string    `json:"pair"`
-	Enabled      bool      `json:"enabled"`
-	BuyDXSPrice  Decimal   `json:"buy_dxs_price"`
-	SellDXSPrice Decimal   `json:"sell_dxs_price"`
-	PriceVersion uint64    `json:"price_version"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	AppID              string    `json:"app_id"`
+	MarketID           string    `json:"market_id"`
+	Pair               string    `json:"pair"`
+	Enabled            bool      `json:"enabled"`
+	BaseAssetID        string    `json:"base_asset_id"`
+	QuoteAssetID       string    `json:"quote_asset_id"`
+	BaseAssetRevision  uint64    `json:"base_asset_revision"`
+	QuoteAssetRevision uint64    `json:"quote_asset_revision"`
+	BaseDenom          string    `json:"base_denom"`
+	QuoteDenom         string    `json:"quote_denom"`
+	BaseSymbol         string    `json:"base_symbol"`
+	QuoteSymbol        string    `json:"quote_symbol"`
+	BaseDecimals       uint32    `json:"base_decimals"`
+	QuoteDecimals      uint32    `json:"quote_decimals"`
+	MarketVersion      uint64    `json:"market_version"`
+	BuyBasePrice       Decimal   `json:"buy_base_price"`
+	SellBasePrice      Decimal   `json:"sell_base_price"`
+	PriceVersion       uint64    `json:"price_version"`
+	UpdatedAt          time.Time `json:"updated_at"`
+}
+
+type ConversionMarketList struct {
+	Items []ConversionMarket `json:"items"`
 }
 
 type UpdateConversionPriceRequest struct {
-	BuyDXSPrice     Decimal `json:"buy_dxs_price"`
-	SellDXSPrice    Decimal `json:"sell_dxs_price"`
+	BuyBasePrice    Decimal `json:"buy_base_price"`
+	SellBasePrice   Decimal `json:"sell_base_price"`
 	ExpectedVersion uint64  `json:"expected_version,omitempty"`
 	IdempotencyKey  string  `json:"-"`
 }
 
 type CreateConversionQuoteRequest struct {
 	ExternalUserID string  `json:"external_user_id"`
+	Owner          string  `json:"owner,omitempty"`
+	MarketID       string  `json:"market_id"`
 	Side           string  `json:"side"`
-	InputAsset     string  `json:"input_asset"`
-	OutputAsset    string  `json:"output_asset"`
 	InputAmount    Decimal `json:"input_amount"`
 	IdempotencyKey string  `json:"-"`
 }
 
 type ConversionQuote struct {
-	QuoteID      string    `json:"quote_id"`
-	OperationID  string    `json:"operation_id"`
-	Pair         string    `json:"pair"`
-	Side         string    `json:"side"`
-	InputAsset   string    `json:"input_asset"`
-	InputAmount  Decimal   `json:"input_amount"`
-	OutputAsset  string    `json:"output_asset"`
-	OutputAmount Decimal   `json:"output_amount"`
-	Price        Decimal   `json:"price"`
-	PriceVersion uint64    `json:"price_version"`
-	SignDoc      string    `json:"sign_doc"`
-	ExpiresAt    time.Time `json:"expires_at"`
+	QuoteID       string    `json:"quote_id"`
+	OperationID   string    `json:"operation_id"`
+	MarketID      string    `json:"market_id"`
+	MarketVersion uint64    `json:"market_version"`
+	Pair          string    `json:"pair"`
+	Side          string    `json:"side"`
+	InputAsset    string    `json:"input_asset"`
+	InputDenom    string    `json:"input_denom"`
+	InputAmount   Decimal   `json:"input_amount"`
+	OutputAsset   string    `json:"output_asset"`
+	OutputDenom   string    `json:"output_denom"`
+	OutputAmount  Decimal   `json:"output_amount"`
+	Price         Decimal   `json:"price"`
+	PriceVersion  uint64    `json:"price_version"`
+	BaseAssetID   string    `json:"base_asset_id"`
+	QuoteAssetID  string    `json:"quote_asset_id"`
+	BaseDenom     string    `json:"base_denom"`
+	QuoteDenom    string    `json:"quote_denom"`
+	BaseDecimals  uint32    `json:"base_decimals"`
+	QuoteDecimals uint32    `json:"quote_decimals"`
+	SignDoc       string    `json:"sign_doc"`
+	ExpiresAt     time.Time `json:"expires_at"`
 }
 
 type Operation struct {

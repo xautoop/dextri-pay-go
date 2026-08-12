@@ -69,15 +69,21 @@ func (s *UsersService) GetBalances(ctx context.Context, externalUserID string) (
 
 type ConversionsService struct{ client *Client }
 
-func (s *ConversionsService) GetMarket(ctx context.Context) (*ConversionMarket, error) {
+func (s *ConversionsService) ListMarkets(ctx context.Context) ([]ConversionMarket, error) {
+	var out ConversionMarketList
+	err := s.client.doJSON(ctx, http.MethodGet, "/v1/conversion-markets", nil, nil, &out, "")
+	return out.Items, err
+}
+
+func (s *ConversionsService) GetMarket(ctx context.Context, marketID string) (*ConversionMarket, error) {
 	var out ConversionMarket
-	err := s.client.doJSON(ctx, http.MethodGet, "/v1/conversion-markets/dxs-usdc", nil, nil, &out, "")
+	err := s.client.doJSON(ctx, http.MethodGet, "/v1/conversion-markets/"+url.PathEscape(marketID), nil, nil, &out, "")
 	return &out, err
 }
 
-func (s *ConversionsService) UpdatePrice(ctx context.Context, request UpdateConversionPriceRequest) (*ConversionMarket, error) {
+func (s *ConversionsService) UpdatePrice(ctx context.Context, marketID string, request UpdateConversionPriceRequest) (*ConversionMarket, error) {
 	var out ConversionMarket
-	err := s.client.doJSON(ctx, http.MethodPut, "/v1/conversion-markets/dxs-usdc/price", nil, request, &out, request.IdempotencyKey)
+	err := s.client.doJSON(ctx, http.MethodPut, "/v1/conversion-markets/"+url.PathEscape(marketID)+"/price", nil, request, &out, request.IdempotencyKey)
 	return &out, err
 }
 

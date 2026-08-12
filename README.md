@@ -27,3 +27,7 @@ The SDK signs partner requests, creates idempotency keys, exposes decimal
 amounts as strings, maps API errors and verifies webhook signatures. Wallet
 connection, QR rendering, user private keys and chain RPC access remain outside
 the SDK.
+
+Conversion markets are configured by Admin and identified by `market_id`.
+Their denoms and decimal precision come from the active Dextri chain asset
+registry; SDK callers use `sell_base` or `buy_base` and never supply precision.
