@@ -38,3 +38,20 @@ func TestUpdatePriceRequestValidate(t *testing.T) {
 		})
 	}
 }
+
+func TestCreateQuoteRequestValidate(t *testing.T) {
+	valid := CreateQuoteRequest{ExternalUserID: "user", MarketID: "market", Side: SideSellBase, InputAmount: "1"}
+	if err := valid.Validate(); err != nil {
+		t.Fatal(err)
+	}
+	for _, request := range []CreateQuoteRequest{
+		{MarketID: "market", Side: SideSellBase, InputAmount: "1"},
+		{ExternalUserID: "user", Side: SideSellBase, InputAmount: "1"},
+		{ExternalUserID: "user", MarketID: "market", Side: "unknown", InputAmount: "1"},
+		{ExternalUserID: "user", MarketID: "market", Side: SideSellBase, InputAmount: "0"},
+	} {
+		if err := request.Validate(); err == nil {
+			t.Fatalf("invalid request accepted: %#v", request)
+		}
+	}
+}

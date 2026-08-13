@@ -28,6 +28,14 @@ var publicPackagePolicies = map[string]packagePolicy{
 	"webhook":    {},
 }
 
+var domainImportPaths = map[string]struct{}{
+	"github.com/xautoop/dextri-pay-go/channels":   {},
+	"github.com/xautoop/dextri-pay-go/checkout":   {},
+	"github.com/xautoop/dextri-pay-go/conversion": {},
+	"github.com/xautoop/dextri-pay-go/operation":  {},
+	"github.com/xautoop/dextri-pay-go/users":      {},
+}
+
 func TestRepositoryRootContainsNoGoSource(t *testing.T) {
 	root := repositoryRoot(t)
 	files, err := filepath.Glob(filepath.Join(root, "*.go"))
@@ -67,6 +75,38 @@ func TestDomainPackagesDoNotImportInternalImplementation(t *testing.T) {
 				if strings.Contains(value, "/internal/") {
 					t.Errorf("public domain package %s imports implementation package %s", directory, value)
 				}
+			}
+		}
+	}
+}
+
+func TestLegacyResourceLayerDoesNotReturn(t *testing.T) {
+	path := filepath.Join(repositoryRoot(t), "internal", "resource")
+	if _, err := os.Stat(path); err == nil {
+		t.Fatalf("legacy forwarding layer must not exist: %s", path)
+	} else if !os.IsNotExist(err) {
+		t.Fatal(err)
+	}
+}
+
+func TestTransportDoesNotImportDomainPackages(t *testing.T) {
+	root := repositoryRoot(t)
+	files, err := filepath.Glob(filepath.Join(root, "internal", "transport", "*.go"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, filePath := range files {
+		parsed, err := parser.ParseFile(token.NewFileSet(), filePath, nil, parser.ImportsOnly)
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, imported := range parsed.Imports {
+			value, err := strconv.Unquote(imported.Path.Value)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, forbidden := domainImportPaths[value]; forbidden {
+				t.Errorf("transport package imports domain package %s in %s", value, filePath)
 			}
 		}
 	}

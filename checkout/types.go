@@ -2,6 +2,7 @@
 package checkout
 
 import (
+	"strings"
 	"time"
 
 	"github.com/xautoop/dextri-pay-go/api"
@@ -58,6 +59,11 @@ type CreateDepositRequest struct {
 	Metadata api.Metadata `json:"metadata,omitempty"`
 }
 
+// Validate checks the stable deposit Checkout contract.
+func (request CreateDepositRequest) Validate() error {
+	return validateCreateRequest(request.ExternalUserID, request.SourceAsset, request.TargetAsset, request.Amount)
+}
+
 // CreateWithdrawalRequest creates a withdrawal checkout.
 type CreateWithdrawalRequest struct {
 	// ExternalUserID is the App-side stable user identifier.
@@ -74,6 +80,11 @@ type CreateWithdrawalRequest struct {
 	ReturnURL string `json:"return_url,omitempty"`
 	// Metadata is non-sensitive App context returned with the operation.
 	Metadata api.Metadata `json:"metadata,omitempty"`
+}
+
+// Validate checks the stable withdrawal Checkout contract.
+func (request CreateWithdrawalRequest) Validate() error {
+	return validateCreateRequest(request.ExternalUserID, request.SourceAsset, request.TargetAsset, request.Amount)
 }
 
 // CreateConversionRequest creates a chain asset-conversion checkout.
@@ -94,6 +105,11 @@ type CreateConversionRequest struct {
 	Metadata api.Metadata `json:"metadata,omitempty"`
 }
 
+// Validate checks the stable conversion Checkout contract.
+func (request CreateConversionRequest) Validate() error {
+	return validateCreateRequest(request.ExternalUserID, request.SourceAsset, request.TargetAsset, request.Amount)
+}
+
 // CreateDepositAndConvertRequest funds first and then requests a fresh conversion signature.
 type CreateDepositAndConvertRequest struct {
 	// ExternalUserID is the App-side stable user identifier.
@@ -110,6 +126,24 @@ type CreateDepositAndConvertRequest struct {
 	ReturnURL string `json:"return_url,omitempty"`
 	// Metadata is non-sensitive App context returned with the operation.
 	Metadata api.Metadata `json:"metadata,omitempty"`
+}
+
+// Validate checks the stable deposit-and-convert Checkout contract.
+func (request CreateDepositAndConvertRequest) Validate() error {
+	return validateCreateRequest(request.ExternalUserID, request.SourceAsset, request.TargetAsset, request.Amount)
+}
+
+func validateCreateRequest(externalUserID, sourceAsset, targetAsset string, amount money.Decimal) error {
+	if strings.TrimSpace(externalUserID) == "" {
+		return &api.ValidationError{Field: "external_user_id", Message: "is required"}
+	}
+	if strings.TrimSpace(sourceAsset) == "" || strings.TrimSpace(targetAsset) == "" {
+		return &api.ValidationError{Field: "asset", Message: "source_asset and target_asset are required"}
+	}
+	if err := amount.ValidatePositive(); err != nil {
+		return &api.ValidationError{Field: "amount", Message: err.Error()}
+	}
+	return nil
 }
 
 // Session is durable Hosted Checkout state.

@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/xautoop/dextri-pay-go/api"
 	"github.com/xautoop/dextri-pay-go/money"
 )
 
@@ -125,6 +126,23 @@ type CreateQuoteRequest struct {
 	Side Side `json:"side"`
 	// InputAmount is the human-readable amount of the selected input asset.
 	InputAmount money.Decimal `json:"input_amount"`
+}
+
+// Validate checks the stable quote-creation contract.
+func (request CreateQuoteRequest) Validate() error {
+	if strings.TrimSpace(request.ExternalUserID) == "" {
+		return &api.ValidationError{Field: "external_user_id", Message: "is required"}
+	}
+	if strings.TrimSpace(request.MarketID) == "" {
+		return &api.ValidationError{Field: "market_id", Message: "is required"}
+	}
+	if !request.Side.Valid() {
+		return &api.ValidationError{Field: "side", Message: "must be sell_base or buy_base"}
+	}
+	if err := request.InputAmount.ValidatePositive(); err != nil {
+		return &api.ValidationError{Field: "input_amount", Message: err.Error()}
+	}
+	return nil
 }
 
 // Quote is calculated with the App price and chain-owned asset precision.

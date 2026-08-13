@@ -149,6 +149,8 @@ Webhook Secret 与 App API Secret 相互独立。
 - `money`：字符串形式的十进制金额；
 - `webhook`：Webhook 验签和事件类型。
 
+包边界与依赖方向见 [SDK 架构](docs/architecture.zh-CN.md)。
+
 ## 仓库开发
 
 无需任何同级仓库即可执行完整检查：

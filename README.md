@@ -149,6 +149,8 @@ The webhook secret is separate from the App API secret.
 - `money`: decimal-string monetary values;
 - `webhook`: webhook signature verification and event types.
 
+See [SDK Architecture](docs/architecture.md) for package boundaries and dependency direction.
+
 ## Development
 
 Run the repository checks without any sibling repository:

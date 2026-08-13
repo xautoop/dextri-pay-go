@@ -11,9 +11,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/xautoop/dextri-pay-go/money"
-	"github.com/xautoop/dextri-pay-go/operation"
 )
 
 const (
@@ -23,72 +20,6 @@ const (
 	HeaderSignature  = "X-DEXTRI-PAY-WEBHOOK-SIGN"
 	DefaultTolerance = 5 * time.Minute
 )
-
-// EventType identifies a Pay webhook lifecycle event.
-type EventType string
-
-const (
-	EventOperationCreated        EventType = "operation.created"
-	EventOperationAwaitingWallet EventType = "operation.awaiting_wallet"
-	EventOperationAwaitingAction EventType = "operation.awaiting_user_action"
-	EventOperationProcessing     EventType = "operation.processing"
-	EventOperationSucceeded      EventType = "operation.succeeded"
-	EventOperationFailed         EventType = "operation.failed"
-	EventOperationExpired        EventType = "operation.expired"
-	EventOperationManualReview   EventType = "operation.manual_review"
-)
-
-// Event is the signed webhook payload delivered by Dextri Pay.
-type Event struct {
-	// ID is the stable event identifier used for consumer deduplication.
-	ID string `json:"id"`
-	// Type identifies the operation lifecycle transition.
-	Type EventType `json:"type"`
-	// CreatedAt is the event creation time.
-	CreatedAt time.Time `json:"created_at"`
-	// Data contains the latest durable resource snapshot.
-	Data EventData `json:"data"`
-}
-
-// EventData contains resources associated with an event.
-type EventData struct {
-	// Operation is the latest App-visible operation snapshot.
-	Operation operation.Operation `json:"operation"`
-}
-
-// UnmarshalJSON accepts both the current public Operation contract and the
-// legacy Outbox field names used by already queued webhook deliveries.
-func (data *EventData) UnmarshalJSON(raw []byte) error {
-	var envelope struct {
-		Operation json.RawMessage `json:"operation"`
-	}
-	if err := json.Unmarshal(raw, &envelope); err != nil {
-		return err
-	}
-	if len(envelope.Operation) == 0 || string(envelope.Operation) == "null" {
-		return nil
-	}
-
-	var current operation.Operation
-	if err := json.Unmarshal(envelope.Operation, &current); err != nil {
-		return err
-	}
-	var legacy struct {
-		DestinationAsset string        `json:"destination_asset"`
-		Amount           money.Decimal `json:"amount"`
-	}
-	if err := json.Unmarshal(envelope.Operation, &legacy); err != nil {
-		return err
-	}
-	if current.TargetAsset == "" {
-		current.TargetAsset = legacy.DestinationAsset
-	}
-	if current.InputAmount == "" {
-		current.InputAmount = legacy.Amount
-	}
-	data.Operation = current
-	return nil
-}
 
 // Delivery contains verified transport metadata and the decoded event.
 type Delivery struct {

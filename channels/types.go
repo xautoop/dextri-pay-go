@@ -22,6 +22,14 @@ type ListParams struct {
 	SourceAsset string
 }
 
+// Validate checks channel filters before an HTTP request is sent.
+func (params ListParams) Validate() error {
+	if params.Flow != "" && params.Flow != FlowDeposit && params.Flow != FlowWithdrawal {
+		return &api.ValidationError{Field: "flow", Message: "must be deposit or withdrawal"}
+	}
+	return nil
+}
+
 // Channel is one currently authorized and healthy funding route.
 type Channel struct {
 	// ID is the stable channel identifier passed to Hosted Checkout.

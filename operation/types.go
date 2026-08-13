@@ -79,6 +79,14 @@ type ListParams struct {
 	Limit int
 }
 
+// Validate checks operation-list filters before an HTTP request is sent.
+func (params ListParams) Validate() error {
+	if params.Limit < 0 {
+		return &api.ValidationError{Field: "limit", Message: "must not be negative"}
+	}
+	return nil
+}
+
 // List is one cursor-paginated operation page.
 type List struct {
 	// Items contains the operations in this page.

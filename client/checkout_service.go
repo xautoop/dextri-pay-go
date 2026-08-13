@@ -2,26 +2,23 @@ package client
 
 import (
 	"context"
+	"net/http"
+	"net/url"
+	"strings"
 
 	"github.com/xautoop/dextri-pay-go/api"
 	"github.com/xautoop/dextri-pay-go/checkout"
+	"github.com/xautoop/dextri-pay-go/internal/transport"
+	"github.com/xautoop/dextri-pay-go/money"
 )
-
-type checkoutBackend interface {
-	CreateDeposit(context.Context, checkout.CreateDepositRequest, string) (*checkout.Session, *api.Response, error)
-	CreateWithdrawal(context.Context, checkout.CreateWithdrawalRequest, string) (*checkout.Session, *api.Response, error)
-	CreateConversion(context.Context, checkout.CreateConversionRequest, string) (*checkout.Session, *api.Response, error)
-	CreateDepositAndConvert(context.Context, checkout.CreateDepositAndConvertRequest, string) (*checkout.Session, *api.Response, error)
-	Get(context.Context, string) (*checkout.Session, *api.Response, error)
-}
 
 // CheckoutService creates and reads durable Hosted Checkout sessions.
 type CheckoutService struct {
-	backend checkoutBackend
+	executor executor
 }
 
-func newCheckoutService(backend checkoutBackend) *CheckoutService {
-	return &CheckoutService{backend: backend}
+func newCheckoutService(executor executor) *CheckoutService {
+	return &CheckoutService{executor: executor}
 }
 
 // CreateDeposit creates a user-authorized deposit session.
@@ -30,7 +27,10 @@ func (service *CheckoutService) CreateDeposit(ctx context.Context, request check
 	if err != nil {
 		return nil, nil, err
 	}
-	return service.backend.CreateDeposit(ctx, request, key)
+	if err := request.Validate(); err != nil {
+		return nil, nil, err
+	}
+	return service.create(ctx, checkout.TypeDeposit, newCheckoutPayload(request.ExternalUserID, request.ClientReferenceID, request.SourceAsset, request.TargetAsset, request.Amount, request.ReturnURL, request.Metadata), key)
 }
 
 // CreateWithdrawal creates a user-authorized withdrawal session.
@@ -39,7 +39,10 @@ func (service *CheckoutService) CreateWithdrawal(ctx context.Context, request ch
 	if err != nil {
 		return nil, nil, err
 	}
-	return service.backend.CreateWithdrawal(ctx, request, key)
+	if err := request.Validate(); err != nil {
+		return nil, nil, err
+	}
+	return service.create(ctx, checkout.TypeWithdrawal, newCheckoutPayload(request.ExternalUserID, request.ClientReferenceID, request.SourceAsset, request.TargetAsset, request.Amount, request.ReturnURL, request.Metadata), key)
 }
 
 // CreateConversion creates a user-authorized chain conversion session.
@@ -48,7 +51,10 @@ func (service *CheckoutService) CreateConversion(ctx context.Context, request ch
 	if err != nil {
 		return nil, nil, err
 	}
-	return service.backend.CreateConversion(ctx, request, key)
+	if err := request.Validate(); err != nil {
+		return nil, nil, err
+	}
+	return service.create(ctx, checkout.TypeConversion, newCheckoutPayload(request.ExternalUserID, request.ClientReferenceID, request.SourceAsset, request.TargetAsset, request.Amount, request.ReturnURL, request.Metadata), key)
 }
 
 // CreateDepositAndConvert creates a funding session followed by a fresh conversion authorization.
@@ -57,10 +63,49 @@ func (service *CheckoutService) CreateDepositAndConvert(ctx context.Context, req
 	if err != nil {
 		return nil, nil, err
 	}
-	return service.backend.CreateDepositAndConvert(ctx, request, key)
+	if err := request.Validate(); err != nil {
+		return nil, nil, err
+	}
+	return service.create(ctx, checkout.TypeDepositAndConvert, newCheckoutPayload(request.ExternalUserID, request.ClientReferenceID, request.SourceAsset, request.TargetAsset, request.Amount, request.ReturnURL, request.Metadata), key)
 }
 
 // Get returns the latest durable state of a Checkout session.
 func (service *CheckoutService) Get(ctx context.Context, id string) (*checkout.Session, *api.Response, error) {
-	return service.backend.Get(ctx, id)
+	id = strings.TrimSpace(id)
+	if id == "" {
+		return nil, nil, &api.ValidationError{Field: "session_id", Message: "is required"}
+	}
+	var output checkout.Session
+	response, err := service.executor.Do(ctx, transport.Request{Method: http.MethodGet, Path: "/v1/checkout-sessions/" + url.PathEscape(id)}, &output)
+	return &output, response, err
+}
+
+type checkoutPayload struct {
+	Type              checkout.Type `json:"type"`
+	ExternalUserID    string        `json:"external_user_id"`
+	ClientReferenceID string        `json:"client_reference_id,omitempty"`
+	SourceAsset       string        `json:"source_asset"`
+	TargetAsset       string        `json:"target_asset"`
+	Amount            money.Decimal `json:"amount"`
+	ReturnURL         string        `json:"return_url,omitempty"`
+	Metadata          api.Metadata  `json:"metadata,omitempty"`
+}
+
+func newCheckoutPayload(externalUserID, clientReferenceID, sourceAsset, targetAsset string, amount money.Decimal, returnURL string, metadata api.Metadata) checkoutPayload {
+	return checkoutPayload{
+		ExternalUserID:    strings.TrimSpace(externalUserID),
+		ClientReferenceID: strings.TrimSpace(clientReferenceID),
+		SourceAsset:       strings.TrimSpace(sourceAsset),
+		TargetAsset:       strings.TrimSpace(targetAsset),
+		Amount:            amount,
+		ReturnURL:         strings.TrimSpace(returnURL),
+		Metadata:          metadata,
+	}
+}
+
+func (service *CheckoutService) create(ctx context.Context, kind checkout.Type, request checkoutPayload, idempotencyKey string) (*checkout.Session, *api.Response, error) {
+	request.Type = kind
+	var output checkout.Session
+	response, err := service.executor.Do(ctx, transport.Request{Method: http.MethodPost, Path: "/v1/checkout-sessions", Body: request, IdempotencyKey: idempotencyKey}, &output)
+	return &output, response, err
 }

@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/xautoop/dextri-pay-go/internal/auth"
-	"github.com/xautoop/dextri-pay-go/internal/resource"
 	"github.com/xautoop/dextri-pay-go/internal/transport"
 )
 
@@ -64,11 +63,11 @@ func New(config Config, supplied ...Option) (*Client, error) {
 		baseURL:     strings.TrimSpace(config.BaseURL),
 		appID:       strings.TrimSpace(config.Credentials.AppID),
 		keyID:       strings.TrimSpace(config.Credentials.KeyID),
-		Channels:    newChannelsService(resource.NewChannels(transportClient)),
-		Checkout:    newCheckoutService(resource.NewCheckout(transportClient)),
-		Users:       newUsersService(resource.NewUsers(transportClient)),
-		Conversions: newConversionsService(resource.NewConversions(transportClient)),
-		Operations:  newOperationsService(resource.NewOperations(transportClient)),
+		Channels:    newChannelsService(transportClient),
+		Checkout:    newCheckoutService(transportClient),
+		Users:       newUsersService(transportClient),
+		Conversions: newConversionsService(transportClient),
+		Operations:  newOperationsService(transportClient),
 	}, nil
 }
 

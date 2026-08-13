@@ -2,8 +2,10 @@
 package users
 
 import (
+	"strings"
 	"time"
 
+	"github.com/xautoop/dextri-pay-go/api"
 	"github.com/xautoop/dextri-pay-go/money"
 )
 
@@ -51,6 +53,17 @@ type CreateBindingSessionRequest struct {
 	WalletFamily WalletFamily `json:"wallet_family"`
 	// ReturnURL is an App return URL previously allowlisted by Admin.
 	ReturnURL string `json:"return_url,omitempty"`
+}
+
+// Validate checks the stable wallet-binding contract.
+func (request CreateBindingSessionRequest) Validate() error {
+	if strings.TrimSpace(request.ExternalUserID) == "" {
+		return &api.ValidationError{Field: "external_user_id", Message: "is required"}
+	}
+	if request.WalletFamily != WalletFamilyEVM && request.WalletFamily != WalletFamilyCosmos {
+		return &api.ValidationError{Field: "wallet_family", Message: "must be evm or cosmos"}
+	}
+	return nil
 }
 
 // BindingSession contains a wallet-binding Checkout URL.
