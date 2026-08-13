@@ -12,11 +12,11 @@ jobs:
     name: Full quality gate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
           go-version: "1.25.12"
-          cache: true
+          cache: false
       - run: make check
 
   minimum-go:
@@ -25,9 +25,9 @@ jobs:
     env:
       GOTOOLCHAIN: local
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
           go-version: "1.25.4"
-          cache: true
+          cache: false
       - run: go test ./...
