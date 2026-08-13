@@ -1,6 +1,8 @@
 package retry
 
 import (
+	"context"
+	"errors"
 	"net/http"
 	"testing"
 	"time"
@@ -13,6 +15,18 @@ func TestDelayUsesAndCapsRetryAfterSeconds(t *testing.T) {
 	}
 	if got := policy.Delay(1, "30", time.Unix(0, 0)); got != 3*time.Second {
 		t.Fatalf("capped Retry-After delay = %s, want 3s", got)
+	}
+}
+
+func TestWaitReturnsPromptlyWhenContextIsCanceled(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	started := time.Now()
+	if err := Wait(ctx, time.Hour); !errors.Is(err, context.Canceled) {
+		t.Fatalf("Wait() error = %v, want context.Canceled", err)
+	}
+	if elapsed := time.Since(started); elapsed > 100*time.Millisecond {
+		t.Fatalf("Wait() took %s after context cancellation", elapsed)
 	}
 }
 

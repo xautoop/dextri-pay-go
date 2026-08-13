@@ -161,6 +161,19 @@ make check
 
 检查内容包括格式、Module 整洁、单元测试、Race Detector、`go vet`、Staticcheck 和 `git diff --check`。
 
+真实 Sandbox 冒烟测试默认不会执行；配置专用 Sandbox 环境变量后可运行：
+
+- `DEXTRI_PAY_SANDBOX_BASE_URL`；
+- `DEXTRI_PAY_SANDBOX_APP_ID`；
+- `DEXTRI_PAY_SANDBOX_KEY_ID`；
+- `DEXTRI_PAY_SANDBOX_APP_SECRET`。
+
+```bash
+make test-sandbox
+```
+
+准备版本标签前请检查 [Changelog](CHANGELOG.md) 和[发布清单](docs/releasing.md)。
+
 ## 许可证
 
 本项目采用 [Apache License 2.0](LICENSE)。

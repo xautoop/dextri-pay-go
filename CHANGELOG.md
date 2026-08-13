@@ -1,0 +1,28 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+The project has not published its first version yet.
+
+## Unreleased
+
+### Added
+
+- Compile-time compatibility checks for the planned `v0.1.0` public SDK surface.
+- Validation tests for public request types and security-boundary tests for
+  signing, retries, response limits, and webhook verification.
+- CI coverage for the full quality gate and the minimum supported Go version.
+- An opt-in Sandbox channel-discovery smoke test.
+
+### Changed
+
+- Capability services now call the private transport directly through one
+  executor boundary.
+- Stable request validation lives with public request types.
+- Webhook event types, legacy compatibility, and verification are separated by
+  responsibility.
+
+### Removed
+
+- The redundant private Resource/Provider forwarding layer.

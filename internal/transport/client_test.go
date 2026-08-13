@@ -107,3 +107,53 @@ func TestRetryableTransportErrorClassification(t *testing.T) {
 		})
 	}
 }
+
+func TestClientRejectsOversizedResponse(t *testing.T) {
+	roundTripper := roundTripFunc(func(request *http.Request) (*http.Response, error) {
+		return &http.Response{
+			StatusCode: http.StatusOK,
+			Header:     http.Header{},
+			Body:       io.NopCloser(strings.NewReader(strings.Repeat("x", maxResponseBytes+1))),
+			Request:    request,
+		}, nil
+	})
+	client, err := New(Config{
+		BaseURL:     "https://source.example",
+		Credentials: auth.Credentials{AppID: "app", KeyID: "key", Secret: "secret"},
+		HTTPClient:  &http.Client{Transport: roundTripper},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = client.Do(context.Background(), Request{Method: http.MethodPost, Path: "/large"}, &struct{}{})
+	var requestError *api.RequestError
+	if !errors.As(err, &requestError) || !strings.Contains(requestError.Error(), "exceeds 4 MiB") {
+		t.Fatalf("Do() error = %v, want oversized RequestError", err)
+	}
+}
+
+func TestClientReportsMalformedSuccessJSON(t *testing.T) {
+	roundTripper := roundTripFunc(func(request *http.Request) (*http.Response, error) {
+		headers := http.Header{}
+		headers.Set(auth.HeaderRequestID, "req-json")
+		return &http.Response{
+			StatusCode: http.StatusOK,
+			Header:     headers,
+			Body:       io.NopCloser(strings.NewReader("{")),
+			Request:    request,
+		}, nil
+	})
+	client, err := New(Config{
+		BaseURL:     "https://source.example",
+		Credentials: auth.Credentials{AppID: "app", KeyID: "key", Secret: "secret"},
+		HTTPClient:  &http.Client{Transport: roundTripper},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	response, err := client.Do(context.Background(), Request{Method: http.MethodPost, Path: "/malformed"}, &struct{}{})
+	var requestError *api.RequestError
+	if !errors.As(err, &requestError) || response.RequestID != "req-json" || requestError.RequestID != "req-json" {
+		t.Fatalf("response=%#v error=%v", response, err)
+	}
+}

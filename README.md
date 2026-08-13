@@ -161,6 +161,19 @@ make check
 
 The check includes formatting, module tidiness, unit tests, the race detector, `go vet`, Staticcheck, and `git diff --check`.
 
+The live Sandbox smoke test is opt-in and requires dedicated Sandbox environment variables:
+
+- `DEXTRI_PAY_SANDBOX_BASE_URL`;
+- `DEXTRI_PAY_SANDBOX_APP_ID`;
+- `DEXTRI_PAY_SANDBOX_KEY_ID`;
+- `DEXTRI_PAY_SANDBOX_APP_SECRET`.
+
+```bash
+make test-sandbox
+```
+
+See the [changelog](CHANGELOG.md) and [release checklist](docs/releasing.md) before preparing a version tag.
+
 ## License
 
 Licensed under the [Apache License 2.0](LICENSE).
