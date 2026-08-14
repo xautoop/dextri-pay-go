@@ -8,7 +8,7 @@ The official Go SDK for the Dextri Pay Partner API. It provides authenticated AP
 
 This repository is currently pre-release and has no published version tag. The first planned release is `v0.1.0`. It requires Go 1.25.4 or later, and public APIs may change before `v1.0.0`.
 
-The SDK is standalone. It does not require a Dextri source checkout, database, blockchain node, wallet library, or any private service package.
+The SDK requires Go 1.25.12 and is standalone. It does not require a Dextri source checkout, database, blockchain node, wallet library, or any private service package.
 
 ## Install
 
@@ -105,6 +105,8 @@ The same client also exposes:
 
 - `pay.Channels.List` for channels currently authorized and available to the App;
 - `pay.Checkout.CreateWithdrawal`, `CreateConversion`, and `CreateDepositAndConvert`;
+- `pay.Checkout.CreatePayment`, `pay.Payments.Get`, and `pay.Payments.Refund` for App Commerce;
+- `pay.Payouts.Create` and `pay.Payouts.Get` for reward-pool payouts;
 - `pay.Users.CreateBindingSession` and `GetBalances`;
 - `pay.Conversions.ListMarkets`, `GetMarket`, `UpdatePrice`, and `CreateQuote`;
 - `pay.Operations.Get` and `List`.
@@ -145,7 +147,7 @@ The webhook secret is separate from the App API secret.
 
 - `client`: authenticated client and API services;
 - `api`: response metadata, API errors, and common JSON types;
-- `channels`, `checkout`, `conversion`, `operation`, `users`: request and response types;
+- `channels`, `checkout`, `conversion`, `operation`, `payment`, `payout`, `users`: request and response types;
 - `money`: decimal-string monetary values;
 - `webhook`: webhook signature verification and event types.
 

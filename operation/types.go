@@ -17,6 +17,9 @@ const (
 	TypeConversion        Type = "conversion"
 	TypeDepositAndConvert Type = "deposit_and_convert"
 	TypeUserBinding       Type = "user_binding"
+	TypePayment           Type = "payment"
+	TypeRefund            Type = "refund"
+	TypePayout            Type = "payout"
 )
 
 // Status is the durable operation lifecycle state.
@@ -31,6 +34,9 @@ const (
 	StatusFailed             Status = "failed"
 	StatusExpired            Status = "expired"
 	StatusManualReview       Status = "manual_review"
+	StatusAuthorized         Status = "authorized"
+	StatusCancelled          Status = "cancelled"
+	StatusRefunded           Status = "refunded"
 )
 
 // Operation is one App-visible durable business record.

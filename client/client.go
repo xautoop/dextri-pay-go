@@ -25,6 +25,10 @@ type Client struct {
 	Conversions *ConversionsService
 	// Operations reads durable App-visible business operations.
 	Operations *OperationsService
+	// Payments reads and refunds App Commerce payments.
+	Payments *PaymentsService
+	// Payouts creates and reads reward payouts.
+	Payouts *PayoutsService
 }
 
 // New constructs a concurrency-safe Pay client from explicit credentials and options.
@@ -68,6 +72,8 @@ func New(config Config, supplied ...Option) (*Client, error) {
 		Users:       newUsersService(transportClient),
 		Conversions: newConversionsService(transportClient),
 		Operations:  newOperationsService(transportClient),
+		Payments:    newPaymentsService(transportClient),
+		Payouts:     newPayoutsService(transportClient),
 	}, nil
 }
 

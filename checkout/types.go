@@ -18,6 +18,7 @@ const (
 	TypeWithdrawal        Type = "withdrawal"
 	TypeConversion        Type = "conversion"
 	TypeDepositAndConvert Type = "deposit_and_convert"
+	TypePayment           Type = "payment"
 )
 
 // Status is the durable Hosted Checkout lifecycle state.
@@ -131,6 +132,21 @@ type CreateDepositAndConvertRequest struct {
 // Validate checks the stable deposit-and-convert Checkout contract.
 func (request CreateDepositAndConvertRequest) Validate() error {
 	return validateCreateRequest(request.ExternalUserID, request.SourceAsset, request.TargetAsset, request.Amount)
+}
+
+// CreatePaymentRequest creates a user-authorized App Commerce payment.
+// Amount uses display units; Pay resolves chain decimals before authorization.
+type CreatePaymentRequest struct {
+	ExternalUserID    string        `json:"external_user_id"`
+	ClientReferenceID string        `json:"client_reference_id"`
+	Asset             string        `json:"asset"`
+	Amount            money.Decimal `json:"amount"`
+	ReturnURL         string        `json:"return_url,omitempty"`
+	Metadata          api.Metadata  `json:"metadata,omitempty"`
+}
+
+func (request CreatePaymentRequest) Validate() error {
+	return validateCreateRequest(request.ExternalUserID, request.Asset, request.Asset, request.Amount)
 }
 
 func validateCreateRequest(externalUserID, sourceAsset, targetAsset string, amount money.Decimal) error {

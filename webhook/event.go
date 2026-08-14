@@ -18,6 +18,13 @@ const (
 	EventOperationFailed         EventType = "operation.failed"
 	EventOperationExpired        EventType = "operation.expired"
 	EventOperationManualReview   EventType = "operation.manual_review"
+	EventPaymentAuthorized       EventType = "payment.authorized"
+	EventPaymentSucceeded        EventType = "payment.succeeded"
+	EventPaymentCancelled        EventType = "payment.cancelled"
+	EventRefundSucceeded         EventType = "refund.succeeded"
+	EventRefundFailed            EventType = "refund.failed"
+	EventPayoutSucceeded         EventType = "payout.succeeded"
+	EventPayoutFailed            EventType = "payout.failed"
 )
 
 // Event is the signed webhook payload delivered by Dextri Pay.

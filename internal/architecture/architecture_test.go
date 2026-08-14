@@ -24,6 +24,8 @@ var publicPackagePolicies = map[string]packagePolicy{
 	"conversion": {},
 	"money":      {},
 	"operation":  {},
+	"payment":    {},
+	"payout":     {},
 	"users":      {},
 	"webhook":    {},
 }
@@ -33,6 +35,8 @@ var domainImportPaths = map[string]struct{}{
 	"github.com/xautoop/dextri-pay-go/checkout":   {},
 	"github.com/xautoop/dextri-pay-go/conversion": {},
 	"github.com/xautoop/dextri-pay-go/operation":  {},
+	"github.com/xautoop/dextri-pay-go/payment":    {},
+	"github.com/xautoop/dextri-pay-go/payout":     {},
 	"github.com/xautoop/dextri-pay-go/users":      {},
 }
 

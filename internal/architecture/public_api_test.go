@@ -13,6 +13,8 @@ import (
 	"github.com/xautoop/dextri-pay-go/client"
 	"github.com/xautoop/dextri-pay-go/conversion"
 	"github.com/xautoop/dextri-pay-go/operation"
+	"github.com/xautoop/dextri-pay-go/payment"
+	"github.com/xautoop/dextri-pay-go/payout"
 	"github.com/xautoop/dextri-pay-go/users"
 	"github.com/xautoop/dextri-pay-go/webhook"
 )
@@ -52,6 +54,11 @@ type (
 		context.Context,
 		string,
 	) (*checkout.Session, *api.Response, error)
+	checkoutPaymentMethod    func(*client.CheckoutService, context.Context, checkout.CreatePaymentRequest, ...client.RequestOption) (*checkout.Session, *api.Response, error)
+	paymentGetMethod         func(*client.PaymentsService, context.Context, string) (*payment.Payment, *api.Response, error)
+	paymentRefundMethod      func(*client.PaymentsService, context.Context, string, payment.RefundRequest, ...client.RequestOption) (*payment.Refund, *api.Response, error)
+	payoutCreateMethod       func(*client.PayoutsService, context.Context, payout.CreateRequest, ...client.RequestOption) (*payout.Payout, *api.Response, error)
+	payoutGetMethod          func(*client.PayoutsService, context.Context, string) (*payout.Payout, *api.Response, error)
 	usersCreateBindingMethod func(
 		*client.UsersService,
 		context.Context,
@@ -111,6 +118,11 @@ var (
 	_ checkoutConversionMethod        = (*client.CheckoutService).CreateConversion
 	_ checkoutDepositAndConvertMethod = (*client.CheckoutService).CreateDepositAndConvert
 	_ checkoutGetMethod               = (*client.CheckoutService).Get
+	_ checkoutPaymentMethod           = (*client.CheckoutService).CreatePayment
+	_ paymentGetMethod                = (*client.PaymentsService).Get
+	_ paymentRefundMethod             = (*client.PaymentsService).Refund
+	_ payoutCreateMethod              = (*client.PayoutsService).Create
+	_ payoutGetMethod                 = (*client.PayoutsService).Get
 	_ usersCreateBindingMethod        = (*client.UsersService).CreateBindingSession
 	_ usersGetBalancesMethod          = (*client.UsersService).GetBalances
 	_ conversionsListMarketsMethod    = (*client.ConversionsService).ListMarkets
@@ -131,6 +143,8 @@ func assertClientServiceFields(pay *client.Client) {
 	_ = pay.Users
 	_ = pay.Conversions
 	_ = pay.Operations
+	_ = pay.Payments
+	_ = pay.Payouts
 }
 
 func assertErrorAndResponseFields(apiError *api.APIError, requestError *api.RequestError, validationError *api.ValidationError, response *api.Response) {

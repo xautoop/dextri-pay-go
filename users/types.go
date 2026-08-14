@@ -23,7 +23,9 @@ type Balance struct {
 	Available money.Decimal `json:"available"`
 	// Locked is the locked human-readable balance.
 	Locked money.Decimal `json:"locked"`
-	// Total is the available plus locked balance.
+	// Frozen is unavailable because of withdrawal, risk or review holds.
+	Frozen money.Decimal `json:"frozen"`
+	// Total is the available plus locked plus frozen balance.
 	Total money.Decimal `json:"total"`
 }
 

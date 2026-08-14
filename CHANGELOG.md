@@ -14,6 +14,9 @@ The project has not published its first version yet.
   signing, retries, response limits, and webhook verification.
 - CI coverage for the full quality gate and the minimum supported Go version.
 - An opt-in Sandbox channel-discovery smoke test.
+- App Commerce payment checkout, payment/refund queries, reward payouts, and
+  payment/refund/payout webhook contracts for the planned `v0.1.0`.
+- Balance responses expose `frozen` separately from authorization `locked`.
 
 ### Changed
 

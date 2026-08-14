@@ -12,6 +12,7 @@ func TestCreateRequestsValidate(t *testing.T) {
 		CreateWithdrawalRequest{ExternalUserID: "user", SourceAsset: "USDC", TargetAsset: "USDT", Amount: "1"},
 		CreateConversionRequest{ExternalUserID: "user", SourceAsset: "ASSET-A", TargetAsset: "ASSET-B", Amount: "1"},
 		CreateDepositAndConvertRequest{ExternalUserID: "user", SourceAsset: "USDT", TargetAsset: "ASSET-A", Amount: "1"},
+		CreatePaymentRequest{ExternalUserID: "user", ClientReferenceID: "order-1", Asset: "DXS", Amount: "1"},
 	}
 	for _, request := range valid {
 		if err := request.Validate(); err != nil {

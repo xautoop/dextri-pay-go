@@ -69,6 +69,18 @@ func (service *CheckoutService) CreateDepositAndConvert(ctx context.Context, req
 	return service.create(ctx, checkout.TypeDepositAndConvert, newCheckoutPayload(request.ExternalUserID, request.ClientReferenceID, request.SourceAsset, request.TargetAsset, request.Amount, request.ReturnURL, request.Metadata), key)
 }
 
+// CreatePayment creates a user-authorized App Commerce payment session.
+func (service *CheckoutService) CreatePayment(ctx context.Context, request checkout.CreatePaymentRequest, supplied ...RequestOption) (*checkout.Session, *api.Response, error) {
+	key, err := resolveIdempotencyKey(supplied...)
+	if err != nil {
+		return nil, nil, err
+	}
+	if err := request.Validate(); err != nil {
+		return nil, nil, err
+	}
+	return service.create(ctx, checkout.TypePayment, newCheckoutPayload(request.ExternalUserID, request.ClientReferenceID, request.Asset, request.Asset, request.Amount, request.ReturnURL, request.Metadata), key)
+}
+
 // Get returns the latest durable state of a Checkout session.
 func (service *CheckoutService) Get(ctx context.Context, id string) (*checkout.Session, *api.Response, error) {
 	id = strings.TrimSpace(id)
