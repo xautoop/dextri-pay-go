@@ -27,7 +27,7 @@ type Client struct {
 	Operations *OperationsService
 	// Payments reads and refunds App Commerce payments.
 	Payments *PaymentsService
-	// Payouts creates and reads reward payouts.
+	// Payouts creates and reads optional App-funded disbursements.
 	Payouts *PayoutsService
 }
 

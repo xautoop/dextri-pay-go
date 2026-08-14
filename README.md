@@ -106,7 +106,8 @@ The same client also exposes:
 - `pay.Channels.List` for channels currently authorized and available to the App;
 - `pay.Checkout.CreateWithdrawal`, `CreateConversion`, and `CreateDepositAndConvert`;
 - `pay.Checkout.CreatePayment`, `pay.Payments.Get`, and `pay.Payments.Refund` for App Commerce;
-- `pay.Payouts.Create` and `pay.Payouts.Get` for reward-pool payouts;
+- `pay.Payouts.Create` and `pay.Payouts.Get` for optional App-funded payouts
+  such as rewards, rebates, or compensation;
 - `pay.Users.CreateBindingSession` and `GetBalances`;
 - `pay.Conversions.ListMarkets`, `GetMarket`, `UpdatePrice`, and `CreateQuote`;
 - `pay.Operations.Get` and `List`.

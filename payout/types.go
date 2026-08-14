@@ -1,4 +1,5 @@
-// Package payout defines App-funded reward payout contracts.
+// Package payout defines optional App-funded disbursement contracts. A payout
+// can represent a reward, rebate, compensation, or another App business use.
 package payout
 
 import (
