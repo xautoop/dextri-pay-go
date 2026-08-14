@@ -15,10 +15,10 @@ func TestCommerceServiceContracts(t *testing.T) {
 	client := testClient(t, func(request *http.Request) (*http.Response, error) {
 		_, _ = io.ReadAll(request.Body)
 		body := `{"operation_id":"op_1","external_user_id":"pvsz:user:1","type":"payment","status":"succeeded","created_at":"2023-11-14T22:13:20Z","updated_at":"2023-11-14T22:13:20Z"}`
-		if request.URL.Path == "/v1/checkout-sessions" {
+		if request.URL.Path == "/pay/v1/checkout-sessions" {
 			body = `{"session_id":"cs_1","operation_id":"op_1","type":"payment","status":"created","external_user_id":"pvsz:user:1","source_asset":"DXS","target_asset":"DXS","amount":"1","expires_at":"2023-11-14T22:18:20Z"}`
 		}
-		if request.URL.Path == "/v1/payouts" || request.URL.Path == "/v1/payouts/po_1" {
+		if request.URL.Path == "/pay/v1/payouts" || request.URL.Path == "/pay/v1/payouts/po_1" {
 			body = `{"operation_id":"po_1","external_user_id":"pvsz:user:1","type":"payout","status":"succeeded","created_at":"2023-11-14T22:13:20Z","updated_at":"2023-11-14T22:13:20Z"}`
 		}
 		return &http.Response{StatusCode: http.StatusOK, Header: http.Header{}, Body: io.NopCloser(stringsReader(body))}, nil

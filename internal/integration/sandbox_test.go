@@ -25,7 +25,12 @@ func TestSandboxChannelsSmoke(t *testing.T) {
 			Secret: requiredEnv(t, "DEXTRI_PAY_SANDBOX_APP_SECRET"),
 		},
 		UserAgent: "dextri-pay-go-sandbox-smoke",
-	}, client.WithHTTPClient(&http.Client{Timeout: 15 * time.Second}))
+	},
+		client.WithHTTPClient(&http.Client{Timeout: 15 * time.Second}),
+		// Sandbox deployments may be reached through a local SSH tunnel. The SDK
+		// still rejects plain HTTP for every non-loopback address.
+		client.WithAllowInsecureLoopbackHTTP(),
+	)
 	if err != nil {
 		t.Fatal(err)
 	}

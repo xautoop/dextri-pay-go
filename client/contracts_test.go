@@ -62,7 +62,7 @@ func TestCheckoutMutationContracts(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			pay := testClient(t, func(request *http.Request) (*http.Response, error) {
-				if request.Method != http.MethodPost || request.URL.Path != "/v1/checkout-sessions" {
+				if request.Method != http.MethodPost || request.URL.Path != "/pay/v1/checkout-sessions" {
 					t.Fatalf("request=%s %s", request.Method, request.URL.Path)
 				}
 				if request.Header.Get(auth.HeaderIdempotency) == "" {
@@ -96,12 +96,12 @@ func TestCheckoutMutationContracts(t *testing.T) {
 func TestUserResourceContracts(t *testing.T) {
 	pay := testClient(t, func(request *http.Request) (*http.Response, error) {
 		switch {
-		case request.Method == http.MethodPost && request.URL.Path == "/v1/user-binding-sessions":
+		case request.Method == http.MethodPost && request.URL.Path == "/pay/v1/user-binding-sessions":
 			if request.Header.Get(auth.HeaderIdempotency) != "binding-user-01" {
 				t.Fatal("binding request missing idempotency key")
 			}
 			return jsonResponse(http.StatusCreated, `{"session_id":"bind-01","checkout_url":"https://pay.test/checkout","qr_payload":"https://pay.test/checkout","expires_at":"2026-08-13T12:00:00Z"}`, nil), nil
-		case request.Method == http.MethodGet && request.URL.EscapedPath() == "/v1/users/user%2F01/balances":
+		case request.Method == http.MethodGet && request.URL.EscapedPath() == "/pay/v1/users/user%2F01/balances":
 			return jsonResponse(http.StatusOK, `{"external_user_id":"user/01","balances":[{"owner":"dextri1owner","subaccount_id":1,"asset":"asset-a","denom":"uasset-a","available":"9","locked":"1","total":"10"}]}`, nil), nil
 		default:
 			t.Fatalf("unexpected request %s %s", request.Method, request.URL.EscapedPath())
@@ -125,16 +125,16 @@ func TestUserResourceContracts(t *testing.T) {
 func TestConversionResourceContracts(t *testing.T) {
 	pay := testClient(t, func(request *http.Request) (*http.Response, error) {
 		switch {
-		case request.Method == http.MethodGet && request.URL.Path == "/v1/conversion-markets":
+		case request.Method == http.MethodGet && request.URL.Path == "/pay/v1/conversion-markets":
 			return jsonResponse(http.StatusOK, `{"items":[{"app_id":"app","market_id":"asset-a-asset-b","pair":"ASSETA/ASSETB","enabled":true,"buy_base_price":"0.9","sell_base_price":"1.1","updated_at":"2026-08-13T12:00:00Z"}]}`, nil), nil
-		case request.Method == http.MethodGet && request.URL.EscapedPath() == "/v1/conversion-markets/asset-a%2Fasset-b":
+		case request.Method == http.MethodGet && request.URL.EscapedPath() == "/pay/v1/conversion-markets/asset-a%2Fasset-b":
 			return jsonResponse(http.StatusOK, `{"app_id":"app","market_id":"asset-a/asset-b","pair":"ASSETA/ASSETB","enabled":true,"buy_base_price":"0.9","sell_base_price":"1.1","updated_at":"2026-08-13T12:00:00Z"}`, nil), nil
-		case request.Method == http.MethodPut && request.URL.Path == "/v1/conversion-markets/asset-a-asset-b/price":
+		case request.Method == http.MethodPut && request.URL.Path == "/pay/v1/conversion-markets/asset-a-asset-b/price":
 			if request.Header.Get(auth.HeaderIdempotency) != "market-price-01" {
 				t.Fatal("price update missing idempotency key")
 			}
 			return jsonResponse(http.StatusOK, `{"app_id":"app","market_id":"asset-a-asset-b","pair":"ASSETA/ASSETB","enabled":true,"buy_base_price":"0.95","sell_base_price":"1.05","price_version":2,"updated_at":"2026-08-13T12:00:00Z"}`, nil), nil
-		case request.Method == http.MethodPost && request.URL.Path == "/v1/conversion-quotes":
+		case request.Method == http.MethodPost && request.URL.Path == "/pay/v1/conversion-quotes":
 			if request.Header.Get(auth.HeaderIdempotency) != "market-quote-01" {
 				t.Fatal("quote request missing idempotency key")
 			}
@@ -184,7 +184,7 @@ func TestInvalidConversionPriceDoesNotReachNetwork(t *testing.T) {
 
 func TestOperationGetContract(t *testing.T) {
 	pay := testClient(t, func(request *http.Request) (*http.Response, error) {
-		if request.Method != http.MethodGet || request.URL.EscapedPath() != "/v1/operations/pop%2F01" {
+		if request.Method != http.MethodGet || request.URL.EscapedPath() != "/pay/v1/operations/pop%2F01" {
 			t.Fatalf("request=%s %s", request.Method, request.URL.EscapedPath())
 		}
 		return jsonResponse(http.StatusOK, `{"operation_id":"pop/01","external_user_id":"user-01","type":"deposit","status":"succeeded","source_asset":"USDT","target_asset":"USDC","input_amount":"10","output_amount":"9.9","metadata":{"order_id":"order-01"},"created_at":"2026-08-13T12:00:00Z","updated_at":"2026-08-13T12:01:00Z"}`, nil), nil

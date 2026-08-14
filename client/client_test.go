@@ -23,7 +23,7 @@ func TestCreateDepositSignsAndRequiresExplicitIdempotency(t *testing.T) {
 	var observed api.Response
 	client := testClient(t, func(request *http.Request) (*http.Response, error) {
 		body, _ := io.ReadAll(request.Body)
-		if request.URL.Path != "/v1/checkout-sessions" || request.Header.Get(auth.HeaderIdempotency) != "deposit_1" {
+		if request.URL.Path != "/pay/v1/checkout-sessions" || request.Header.Get(auth.HeaderIdempotency) != "deposit_1" {
 			t.Fatalf("bad request %s %q", request.URL.Path, request.Header.Get(auth.HeaderIdempotency))
 		}
 		var payload map[string]any
@@ -98,7 +98,7 @@ func TestConfigurationRejectsPlainHTTP(t *testing.T) {
 func testClient(t *testing.T, roundTrip func(*http.Request) (*http.Response, error), options ...Option) *Client {
 	t.Helper()
 	options = append([]Option{WithHTTPClient(&http.Client{Transport: roundTripFunc(roundTrip)})}, options...)
-	client, err := New(Config{BaseURL: "https://pay.test", Credentials: Credentials{AppID: "app", KeyID: "key", Secret: "highly_sensitive"}}, options...)
+	client, err := New(Config{BaseURL: "https://pay.test/pay", Credentials: Credentials{AppID: "app", KeyID: "key", Secret: "highly_sensitive"}}, options...)
 	if err != nil {
 		t.Fatal(err)
 	}

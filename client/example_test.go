@@ -10,7 +10,7 @@ import (
 
 func ExampleNew() {
 	pay, err := client.New(client.Config{
-		BaseURL: "https://pay.example",
+		BaseURL: "https://pay.example/pay",
 		Credentials: client.Credentials{
 			AppID:  "app_example",
 			KeyID:  "key_example",

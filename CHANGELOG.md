@@ -25,6 +25,7 @@ The project has not published its first version yet.
 - CI uses portable Go cache defaults and current Node.js 24-based official
   Actions without enabling module caching for this dependency-free module.
 - Stable request validation lives with public request types.
+- Partner API requests use the module-specific `/pay/v1/` route prefix.
 - Webhook event types, legacy compatibility, and verification are separated by
   responsibility.
 
