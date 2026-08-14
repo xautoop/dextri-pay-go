@@ -139,6 +139,11 @@ func TestConversionResourceContracts(t *testing.T) {
 				t.Fatal("quote request missing idempotency key")
 			}
 			return jsonResponse(http.StatusCreated, `{"quote_id":"quote-01","operation_id":"pop-01","market_id":"asset-a-asset-b","side":"sell_base","input_asset":"asset-a","input_amount":"10","output_asset":"asset-b","output_amount":"9","price":"0.9","expires_at":"2026-08-13T12:00:00Z"}`, nil), nil
+		case request.Method == http.MethodPost && request.URL.Path == "/pay/v1/conversion-quotes/quote-01/execute":
+			if request.Header.Get(auth.HeaderIdempotency) != "market-execute-01" {
+				t.Fatal("conversion execute missing idempotency key")
+			}
+			return jsonResponse(http.StatusAccepted, `{"operation_id":"pop-01","external_user_id":"user-01","type":"conversion","status":"processing","created_at":"2026-08-13T12:00:00Z","updated_at":"2026-08-13T12:00:00Z"}`, nil), nil
 		default:
 			t.Fatalf("unexpected request %s %s", request.Method, request.URL.EscapedPath())
 			return nil, nil
@@ -164,6 +169,10 @@ func TestConversionResourceContracts(t *testing.T) {
 	}, WithIdempotencyKey("market-quote-01"))
 	if err != nil || quote.QuoteID != "quote-01" || quote.OutputAmount != "9" {
 		t.Fatalf("quote=%#v err=%v", quote, err)
+	}
+	conversionOperation, _, err := pay.Conversions.Execute(context.Background(), quote.QuoteID, WithIdempotencyKey("market-execute-01"))
+	if err != nil || conversionOperation.OperationID != "pop-01" {
+		t.Fatalf("operation=%#v err=%v", conversionOperation, err)
 	}
 }
 

@@ -18,6 +18,9 @@ func TestCommerceServiceContracts(t *testing.T) {
 		if request.URL.Path == "/pay/v1/checkout-sessions" {
 			body = `{"session_id":"cs_1","operation_id":"op_1","type":"payment","status":"created","external_user_id":"pvsz:user:1","source_asset":"DXS","target_asset":"DXS","amount":"1","expires_at":"2023-11-14T22:18:20Z"}`
 		}
+		if request.URL.Path == "/pay/v1/payments" {
+			body = `{"operation":{"operation_id":"op_1","external_user_id":"pvsz:user:1","type":"payment","status":"payment_pending","created_at":"2023-11-14T22:13:20Z","updated_at":"2023-11-14T22:13:20Z"},"signature_required":false,"interaction_type":"none"}`
+		}
 		if request.URL.Path == "/pay/v1/payouts" || request.URL.Path == "/pay/v1/payouts/po_1" {
 			body = `{"operation_id":"po_1","external_user_id":"pvsz:user:1","type":"payout","status":"succeeded","created_at":"2023-11-14T22:13:20Z","updated_at":"2023-11-14T22:13:20Z"}`
 		}
@@ -26,6 +29,10 @@ func TestCommerceServiceContracts(t *testing.T) {
 	ctx := context.Background()
 	if _, _, err := client.Checkout.CreatePayment(ctx, checkout.CreatePaymentRequest{ExternalUserID: "pvsz:user:1", ClientReferenceID: "order-1", Asset: "DXS", Amount: "1"}, WithIdempotencyKey("order-0001")); err != nil {
 		t.Fatal(err)
+	}
+	created, _, err := client.Payments.Create(ctx, payment.CreateRequest{ExternalUserID: "pvsz:user:1", ClientReferenceID: "order-2", Asset: "DXS", Amount: "1"}, WithIdempotencyKey("order-0002"))
+	if err != nil || created.SignatureRequired || created.Operation.Status != "payment_pending" {
+		t.Fatalf("created=%#v err=%v", created, err)
 	}
 	if _, _, err := client.Payments.Get(ctx, "op_1"); err != nil {
 		t.Fatal(err)

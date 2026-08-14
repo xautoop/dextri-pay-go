@@ -9,6 +9,7 @@ import (
 	"github.com/xautoop/dextri-pay-go/api"
 	"github.com/xautoop/dextri-pay-go/conversion"
 	"github.com/xautoop/dextri-pay-go/internal/transport"
+	"github.com/xautoop/dextri-pay-go/operation"
 )
 
 // ConversionsService reads dynamic markets, updates App prices and creates quotes.
@@ -70,5 +71,21 @@ func (service *ConversionsService) CreateQuote(ctx context.Context, request conv
 	}
 	var output conversion.Quote
 	response, err := service.executor.Do(ctx, transport.Request{Method: http.MethodPost, Path: "/v1/conversion-quotes", Body: request, IdempotencyKey: key}, &output)
+	return &output, response, err
+}
+
+// Execute submits an App-custodial quote without a player wallet signature.
+// The returned operation may remain processing while Pay reconciles the chain.
+func (service *ConversionsService) Execute(ctx context.Context, quoteID string, supplied ...RequestOption) (*operation.Operation, *api.Response, error) {
+	key, err := resolveIdempotencyKey(supplied...)
+	if err != nil {
+		return nil, nil, err
+	}
+	quoteID = strings.TrimSpace(quoteID)
+	if quoteID == "" {
+		return nil, nil, &api.ValidationError{Field: "quote_id", Message: "is required"}
+	}
+	var output operation.Operation
+	response, err := service.executor.Do(ctx, transport.Request{Method: http.MethodPost, Path: "/v1/conversion-quotes/" + url.PathEscape(quoteID) + "/execute", IdempotencyKey: key}, &output)
 	return &output, response, err
 }

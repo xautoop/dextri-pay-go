@@ -193,4 +193,8 @@ type Quote struct {
 	SignPayload json.RawMessage `json:"sign_payload,omitempty"`
 	// ExpiresAt is the last time at which the quote may be authorized.
 	ExpiresAt time.Time `json:"expires_at"`
+	// SignatureRequired reports whether a user wallet signature is required.
+	SignatureRequired bool `json:"signature_required"`
+	// InteractionType is none for App-custodial conversion and wallet_signature otherwise.
+	InteractionType string `json:"interaction_type"`
 }

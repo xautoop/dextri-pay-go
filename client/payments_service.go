@@ -17,6 +17,21 @@ func newPaymentsService(executor executor) *PaymentsService {
 	return &PaymentsService{executor: executor}
 }
 
+// Create reserves a custodial player's balance and returns an asynchronous
+// payment operation. It never requires a player wallet signature.
+func (service *PaymentsService) Create(ctx context.Context, request payment.CreateRequest, supplied ...RequestOption) (*payment.CreateResult, *api.Response, error) {
+	key, err := resolveIdempotencyKey(supplied...)
+	if err != nil {
+		return nil, nil, err
+	}
+	if err := request.Validate(); err != nil {
+		return nil, nil, err
+	}
+	var output payment.CreateResult
+	response, err := service.executor.Do(ctx, transport.Request{Method: http.MethodPost, Path: "/v1/payments", Body: request, IdempotencyKey: key}, &output)
+	return &output, response, err
+}
+
 func (service *PaymentsService) Get(ctx context.Context, paymentID string) (*payment.Payment, *api.Response, error) {
 	paymentID = strings.TrimSpace(paymentID)
 	if paymentID == "" {

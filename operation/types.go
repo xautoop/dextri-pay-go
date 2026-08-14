@@ -35,6 +35,8 @@ const (
 	StatusExpired            Status = "expired"
 	StatusManualReview       Status = "manual_review"
 	StatusAuthorized         Status = "authorized"
+	StatusPaymentPending     Status = "payment_pending"
+	StatusSettling           Status = "settling"
 	StatusCancelled          Status = "cancelled"
 	StatusRefunded           Status = "refunded"
 )
