@@ -29,6 +29,8 @@ type Client struct {
 	Payments *PaymentsService
 	// Payouts creates and reads optional App-funded disbursements.
 	Payouts *PayoutsService
+	// Tron creates USDT deposit instructions and manually reviewed withdrawals.
+	Tron *TronService
 }
 
 // New constructs a concurrency-safe Pay client from explicit credentials and options.
@@ -74,6 +76,7 @@ func New(config Config, supplied ...Option) (*Client, error) {
 		Operations:  newOperationsService(transportClient),
 		Payments:    newPaymentsService(transportClient),
 		Payouts:     newPayoutsService(transportClient),
+		Tron:        newTronService(transportClient),
 	}, nil
 }
 

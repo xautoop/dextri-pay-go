@@ -37,6 +37,9 @@ const (
 	StatusAuthorized         Status = "authorized"
 	StatusPaymentPending     Status = "payment_pending"
 	StatusSettling           Status = "settling"
+	StatusPendingReview      Status = "pending_review"
+	StatusApprovedTransfer   Status = "approved_waiting_transfer"
+	StatusConfirming         Status = "confirming"
 	StatusCancelled          Status = "cancelled"
 	StatusRefunded           Status = "refunded"
 )
