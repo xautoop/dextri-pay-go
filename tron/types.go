@@ -4,7 +4,6 @@
 package tron
 
 import (
-	"encoding/hex"
 	"strings"
 	"time"
 
@@ -115,13 +114,17 @@ type WithdrawalList struct {
 	Total int64        `json:"total"`
 }
 
-type ReviewRequest struct {
-	Actor string `json:"actor"`
+type ApproveRequest struct {
+	Actor         string `json:"actor"`
+	SourceAddress string `json:"source_address"`
 }
 
-func (request ReviewRequest) Validate() error {
+func (request ApproveRequest) Validate() error {
 	if strings.TrimSpace(request.Actor) == "" {
 		return &api.ValidationError{Field: "actor", Message: "is required"}
+	}
+	if strings.TrimSpace(request.SourceAddress) == "" {
+		return &api.ValidationError{Field: "source_address", Message: "is required"}
 	}
 	return nil
 }
@@ -137,25 +140,6 @@ func (request RejectRequest) Validate() error {
 	}
 	if strings.TrimSpace(request.Reason) == "" {
 		return &api.ValidationError{Field: "reason", Message: "is required"}
-	}
-	return nil
-}
-
-type SubmitTransferRequest struct {
-	Actor  string `json:"actor"`
-	TxHash string `json:"tx_hash"`
-}
-
-func (request SubmitTransferRequest) Validate() error {
-	if strings.TrimSpace(request.Actor) == "" {
-		return &api.ValidationError{Field: "actor", Message: "is required"}
-	}
-	txHash := strings.TrimPrefix(strings.TrimPrefix(strings.TrimSpace(request.TxHash), "0x"), "0X")
-	if len(txHash) != 64 {
-		return &api.ValidationError{Field: "tx_hash", Message: "must be a 64-character hexadecimal TRON transaction hash"}
-	}
-	if _, err := hex.DecodeString(txHash); err != nil {
-		return &api.ValidationError{Field: "tx_hash", Message: "must be a 64-character hexadecimal TRON transaction hash"}
 	}
 	return nil
 }

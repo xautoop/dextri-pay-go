@@ -78,7 +78,7 @@ func (service *TronService) ListWithdrawals(ctx context.Context, status string, 
 	return &output, response, err
 }
 
-func (service *TronService) ApproveWithdrawal(ctx context.Context, withdrawalID string, request paytron.ReviewRequest, supplied ...RequestOption) (*paytron.Withdrawal, *api.Response, error) {
+func (service *TronService) ApproveWithdrawal(ctx context.Context, withdrawalID string, request paytron.ApproveRequest, supplied ...RequestOption) (*paytron.Withdrawal, *api.Response, error) {
 	if err := request.Validate(); err != nil {
 		return nil, nil, err
 	}
@@ -90,13 +90,6 @@ func (service *TronService) RejectWithdrawal(ctx context.Context, withdrawalID s
 		return nil, nil, err
 	}
 	return service.review(ctx, withdrawalID, "reject", request, supplied...)
-}
-
-func (service *TronService) SubmitWithdrawalTransfer(ctx context.Context, withdrawalID string, request paytron.SubmitTransferRequest, supplied ...RequestOption) (*paytron.Withdrawal, *api.Response, error) {
-	if err := request.Validate(); err != nil {
-		return nil, nil, err
-	}
-	return service.review(ctx, withdrawalID, "transfer", request, supplied...)
 }
 
 func (service *TronService) review(ctx context.Context, withdrawalID, action string, body any, supplied ...RequestOption) (*paytron.Withdrawal, *api.Response, error) {
