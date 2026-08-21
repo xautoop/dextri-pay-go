@@ -1,6 +1,28 @@
 package tron
 
-import "testing"
+import (
+	"encoding/json"
+	"testing"
+)
+
+func TestWithdrawalDecodesFeeSnapshot(t *testing.T) {
+	var withdrawal Withdrawal
+	err := json.Unmarshal([]byte(`{
+		"withdrawal_id":"paywd_1",
+		"amount":"90",
+		"amount_atomic":"90000000",
+		"withdrawal_amount":"100",
+		"fee_amount":"10",
+		"receive_amount":"90",
+		"fee_rate_bps":1000
+	}`), &withdrawal)
+	if err != nil {
+		t.Fatalf("decode withdrawal: %v", err)
+	}
+	if withdrawal.WithdrawalAmount.String() != "100" || withdrawal.FeeAmount.String() != "10" || withdrawal.ReceiveAmount.String() != "90" || withdrawal.FeeRateBPS != 1000 {
+		t.Fatalf("fee snapshot = %+v", withdrawal)
+	}
+}
 
 func TestWithdrawalReviewRequestsValidate(t *testing.T) {
 	tests := []struct {

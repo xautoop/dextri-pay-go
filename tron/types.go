@@ -86,18 +86,25 @@ func (request CreateWithdrawalRequest) Validate() error {
 }
 
 type Withdrawal struct {
-	WithdrawalID          string        `json:"withdrawal_id"`
-	OperationID           string        `json:"operation_id"`
-	ExternalUserID        string        `json:"external_user_id"`
-	ClientReferenceID     string        `json:"client_reference_id,omitempty"`
-	Network               string        `json:"network"`
-	Asset                 string        `json:"asset"`
-	TokenAddress          string        `json:"token_address"`
-	TokenDecimals         uint32        `json:"token_decimals"`
-	SourceAddress         string        `json:"source_address"`
-	DestinationAddress    string        `json:"destination_address"`
-	Amount                money.Decimal `json:"amount"`
-	AmountAtomic          string        `json:"amount_atomic"`
+	WithdrawalID       string        `json:"withdrawal_id"`
+	OperationID        string        `json:"operation_id"`
+	ExternalUserID     string        `json:"external_user_id"`
+	ClientReferenceID  string        `json:"client_reference_id,omitempty"`
+	Network            string        `json:"network"`
+	Asset              string        `json:"asset"`
+	TokenAddress       string        `json:"token_address"`
+	TokenDecimals      uint32        `json:"token_decimals"`
+	SourceAddress      string        `json:"source_address"`
+	DestinationAddress string        `json:"destination_address"`
+	Amount             money.Decimal `json:"amount"`
+	AmountAtomic       string        `json:"amount_atomic"`
+	// WithdrawalAmount is the gross Vault debit, FeeAmount is the retained
+	// fee, and ReceiveAmount is the net TRON transfer amount. Amount remains
+	// the net amount for backwards compatibility.
+	WithdrawalAmount      money.Decimal `json:"withdrawal_amount,omitempty"`
+	FeeAmount             money.Decimal `json:"fee_amount,omitempty"`
+	ReceiveAmount         money.Decimal `json:"receive_amount,omitempty"`
+	FeeRateBPS            uint32        `json:"fee_rate_bps,omitempty"`
 	Status                string        `json:"status"`
 	TxHash                string        `json:"tx_hash,omitempty"`
 	Confirmations         uint64        `json:"confirmations,omitempty"`
