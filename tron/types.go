@@ -14,6 +14,7 @@ import (
 type DepositMode string
 
 const (
+	// Deprecated: new managed-HD Pay deployments reject shared-address Memo deposits.
 	DepositModeMemo    DepositMode = "tron_usdt_memo"
 	DepositModeManaged DepositMode = "tron_usdt_managed"
 )
@@ -39,7 +40,9 @@ func (request CreateDepositRequest) Validate() error {
 }
 
 type Deposit struct {
-	DepositID             string        `json:"deposit_id"`
+	DepositID string `json:"deposit_id"`
+	// OperationID is empty for an address-display instruction. A funding
+	// operation exists only after its real on-chain Transfer is detected.
 	OperationID           string        `json:"operation_id"`
 	ExternalUserID        string        `json:"external_user_id"`
 	ClientReferenceID     string        `json:"client_reference_id,omitempty"`
