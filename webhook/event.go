@@ -3,6 +3,7 @@ package webhook
 import (
 	"time"
 
+	"github.com/xautoop/dextri-pay-go/burn"
 	"github.com/xautoop/dextri-pay-go/escrow"
 	"github.com/xautoop/dextri-pay-go/hold"
 	"github.com/xautoop/dextri-pay-go/operation"
@@ -34,6 +35,8 @@ const (
 	EventEscrowFailed            EventType = "escrow.failed"
 	EventSettlementSucceeded     EventType = "escrow_settlement.succeeded"
 	EventSettlementFailed        EventType = "escrow_settlement.failed"
+	EventBurnSucceeded           EventType = "burn.succeeded"
+	EventBurnFailed              EventType = "burn.failed"
 )
 
 // Event is the signed webhook payload delivered by Dextri Pay.
@@ -58,4 +61,6 @@ type EventData struct {
 	Escrow *escrow.Escrow `json:"escrow,omitempty"`
 	// Settlement is present for atomic allocation events.
 	Settlement *escrow.Settlement `json:"settlement,omitempty"`
+	// Burn is present for asset-destruction events.
+	Burn *burn.Burn `json:"burn,omitempty"`
 }

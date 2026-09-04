@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/xautoop/dextri-pay-go/burn"
 	"github.com/xautoop/dextri-pay-go/escrow"
 	"github.com/xautoop/dextri-pay-go/hold"
 	"github.com/xautoop/dextri-pay-go/internal/auth"
@@ -45,6 +46,13 @@ func TestEscrowServiceContracts(t *testing.T) {
 				t.Fatalf("settlement payload=%#v", payload)
 			}
 			return jsonResponse(201, `{"settlement_id":"s1","operation_id":"op4","escrow_id":"e1","status":"consumed","asset":"DXS","total_amount":"1000.00","total_amount_atomic":"1000000000"}`, nil), nil
+		case "/pay/v1/burns":
+			if payload["source_account_key"] != "burn_pending" || payload["amount_atomic"] != "50000000" {
+				t.Fatalf("burn payload=%#v", payload)
+			}
+			return jsonResponse(201, `{"burn_id":"b1","operation_id":"op5","source_account_key":"burn_pending","status":"processing","asset":"DXS","amount":"50.00","amount_atomic":"50000000"}`, nil), nil
+		case "/pay/v1/burns/b1":
+			return jsonResponse(200, `{"burn_id":"b1","operation_id":"op5","source_account_key":"burn_pending","status":"succeeded","asset":"DXS","amount":"50.00","amount_atomic":"50000000"}`, nil), nil
 		default:
 			t.Fatalf("unexpected request %s %s", request.Method, request.URL.Path)
 			return nil, nil
@@ -76,6 +84,16 @@ func TestEscrowServiceContracts(t *testing.T) {
 	settled, _, err := client.Settlements.Create(ctx, validSettlementRequest(), WithIdempotencyKey("settle-0001"))
 	if err != nil || settled.SettlementID != "s1" {
 		t.Fatalf("settlement=%#v err=%v", settled, err)
+	}
+	burned, _, err := client.Burns.Create(ctx, burn.CreateRequest{
+		SourceAccountKey: "burn_pending", ClientReferenceID: "burn-week-1", Asset: "DXS",
+		Amount: "50.00", AmountAtomic: "50000000", Reason: "scheduled_burn",
+	}, WithIdempotencyKey("burn-0001"))
+	if err != nil || burned.BurnID != "b1" {
+		t.Fatalf("burn=%#v err=%v", burned, err)
+	}
+	if burned, _, err = client.Burns.Get(ctx, "b1"); err != nil || burned.Status != burn.StatusSucceeded {
+		t.Fatalf("burn=%#v err=%v", burned, err)
 	}
 }
 

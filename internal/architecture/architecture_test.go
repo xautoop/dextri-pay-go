@@ -19,6 +19,7 @@ type packagePolicy struct {
 var publicPackagePolicies = map[string]packagePolicy{
 	"account":    {},
 	"api":        {},
+	"burn":       {},
 	"channels":   {},
 	"checkout":   {},
 	"client":     {mayImportInternal: true},
@@ -36,6 +37,7 @@ var publicPackagePolicies = map[string]packagePolicy{
 
 var domainImportPaths = map[string]struct{}{
 	"github.com/xautoop/dextri-pay-go/account":    {},
+	"github.com/xautoop/dextri-pay-go/burn":       {},
 	"github.com/xautoop/dextri-pay-go/channels":   {},
 	"github.com/xautoop/dextri-pay-go/checkout":   {},
 	"github.com/xautoop/dextri-pay-go/conversion": {},

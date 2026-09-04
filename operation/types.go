@@ -24,6 +24,7 @@ const (
 	TypeHoldRelease       Type = "hold_release"
 	TypeEscrowCommit      Type = "escrow_commit"
 	TypeEscrowSettlement  Type = "escrow_settlement"
+	TypeBurn              Type = "burn"
 )
 
 // Status is the durable operation lifecycle state.

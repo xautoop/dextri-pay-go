@@ -3,6 +3,7 @@ package webhook
 import (
 	"encoding/json"
 
+	"github.com/xautoop/dextri-pay-go/burn"
 	"github.com/xautoop/dextri-pay-go/escrow"
 	"github.com/xautoop/dextri-pay-go/hold"
 	"github.com/xautoop/dextri-pay-go/money"
@@ -17,6 +18,7 @@ func (data *EventData) UnmarshalJSON(raw []byte) error {
 		Hold       *hold.Hold         `json:"hold"`
 		Escrow     *escrow.Escrow     `json:"escrow"`
 		Settlement *escrow.Settlement `json:"settlement"`
+		Burn       *burn.Burn         `json:"burn"`
 	}
 	if err := json.Unmarshal(raw, &envelope); err != nil {
 		return err
@@ -24,6 +26,7 @@ func (data *EventData) UnmarshalJSON(raw []byte) error {
 	data.Hold = envelope.Hold
 	data.Escrow = envelope.Escrow
 	data.Settlement = envelope.Settlement
+	data.Burn = envelope.Burn
 	if len(envelope.Operation) == 0 || string(envelope.Operation) == "null" {
 		return nil
 	}

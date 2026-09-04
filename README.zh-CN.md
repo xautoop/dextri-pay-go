@@ -112,6 +112,7 @@ App 可以直接展示 `CheckoutURL`，也可以将 `QRPayload` 渲染成二维�
 - `pay.Holds.Create`、`Get` 和 `Release`：创建、查询和释放通用资金锁定；
 - `pay.Escrows.Commit`：原子确认一组兼容的 Hold；
 - `pay.Settlements.Create`：原子消费托管资金并分配给明确的用户或 App 账户。
+- `pay.Burns.Create`、`Get`：从具备销毁权限的已注册 App 账户发起销毁并查询结果，不暴露 Vault Owner 或子账户编号。
 
 Settlement 请求同时携带展示金额和资产最小单位整数。SDK 在发送请求前校验各笔最小单位金额之和严格等于结算总额；Pay 服务仍负责根据资产精度、账户权限和权威余额做最终校验。
 

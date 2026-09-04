@@ -113,6 +113,8 @@ The same client also exposes:
 - `pay.Escrows.Commit` for atomically committing compatible Holds;
 - `pay.Settlements.Create` for atomically consuming Escrow funds into explicit
   user and App-account allocations;
+- `pay.Burns.Create` and `Get` for destroying assets from a registered,
+  burn-capable App account without exposing Vault Owner or subaccount IDs;
 - `pay.Users.CreateBindingSession` and `GetBalances`;
 - `pay.Conversions.ListMarkets`, `GetMarket`, `UpdatePrice`, and `CreateQuote`;
 - `pay.Operations.Get` and `List`.

@@ -21,6 +21,7 @@ The project has not published its first version yet.
   atomic Escrow Settlement contracts. Settlement requests carry display and
   smallest-unit amounts and reject non-conserving allocations before transport.
 - Hold, Escrow, and Settlement operation states and signed webhook snapshots.
+- Generic App-account Burn create/get contracts, operation type, and webhook snapshots.
 
 ### Changed
 

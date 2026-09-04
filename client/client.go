@@ -37,6 +37,8 @@ type Client struct {
 	Escrows *EscrowsService
 	// Settlements atomically distributes committed Escrow funds.
 	Settlements *SettlementsService
+	// Burns destroys assets from registered burn-capable App accounts.
+	Burns *BurnsService
 	// Tron creates USDT deposit instructions and manually reviewed withdrawals.
 	Tron *TronService
 }
@@ -88,6 +90,7 @@ func New(config Config, supplied ...Option) (*Client, error) {
 		Holds:       newHoldsService(transportClient),
 		Escrows:     newEscrowsService(transportClient),
 		Settlements: newSettlementsService(transportClient),
+		Burns:       newBurnsService(transportClient),
 		Tron:        newTronService(transportClient),
 	}, nil
 }
