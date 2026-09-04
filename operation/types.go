@@ -20,6 +20,10 @@ const (
 	TypePayment           Type = "payment"
 	TypeRefund            Type = "refund"
 	TypePayout            Type = "payout"
+	TypeHold              Type = "hold"
+	TypeHoldRelease       Type = "hold_release"
+	TypeEscrowCommit      Type = "escrow_commit"
+	TypeEscrowSettlement  Type = "escrow_settlement"
 )
 
 // Status is the durable operation lifecycle state.
@@ -42,6 +46,13 @@ const (
 	StatusConfirming         Status = "confirming"
 	StatusCancelled          Status = "cancelled"
 	StatusRefunded           Status = "refunded"
+	StatusHeld               Status = "held"
+	StatusCommitPending      Status = "commit_pending"
+	StatusCommitted          Status = "committed"
+	StatusReleasePending     Status = "release_pending"
+	StatusReleased           Status = "released"
+	StatusConsumePending     Status = "consume_pending"
+	StatusConsumed           Status = "consumed"
 )
 
 // Operation is one App-visible durable business record.

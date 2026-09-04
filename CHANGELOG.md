@@ -17,6 +17,10 @@ The project has not published its first version yet.
 - App Commerce payment checkout, payment/refund queries, optional payouts, and
   payment/refund/payout webhook contracts for the planned `v0.1.0`.
 - Balance responses expose `frozen` separately from authorization `locked`.
+- Generic App-account balance, Hold create/get/release, multi-Hold commit, and
+  atomic Escrow Settlement contracts. Settlement requests carry display and
+  smallest-unit amounts and reject non-conserving allocations before transport.
+- Hold, Escrow, and Settlement operation states and signed webhook snapshots.
 
 ### Changed
 

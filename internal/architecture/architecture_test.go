@@ -17,11 +17,14 @@ type packagePolicy struct {
 }
 
 var publicPackagePolicies = map[string]packagePolicy{
+	"account":    {},
 	"api":        {},
 	"channels":   {},
 	"checkout":   {},
 	"client":     {mayImportInternal: true},
 	"conversion": {},
+	"escrow":     {},
+	"hold":       {},
 	"money":      {},
 	"operation":  {},
 	"payment":    {},
@@ -32,9 +35,12 @@ var publicPackagePolicies = map[string]packagePolicy{
 }
 
 var domainImportPaths = map[string]struct{}{
+	"github.com/xautoop/dextri-pay-go/account":    {},
 	"github.com/xautoop/dextri-pay-go/channels":   {},
 	"github.com/xautoop/dextri-pay-go/checkout":   {},
 	"github.com/xautoop/dextri-pay-go/conversion": {},
+	"github.com/xautoop/dextri-pay-go/escrow":     {},
+	"github.com/xautoop/dextri-pay-go/hold":       {},
 	"github.com/xautoop/dextri-pay-go/operation":  {},
 	"github.com/xautoop/dextri-pay-go/payment":    {},
 	"github.com/xautoop/dextri-pay-go/payout":     {},

@@ -108,6 +108,11 @@ The same client also exposes:
 - `pay.Checkout.CreatePayment`, `pay.Payments.Get`, and `pay.Payments.Refund` for App Commerce;
 - `pay.Payouts.Create` and `pay.Payouts.Get` for optional App-funded payouts
   such as rewards, rebates, or compensation;
+- `pay.Accounts.GetBalance` for registered App-account balances and capabilities;
+- `pay.Holds.Create`, `Get`, and `Release` for generic balance reservations;
+- `pay.Escrows.Commit` for atomically committing compatible Holds;
+- `pay.Settlements.Create` for atomically consuming Escrow funds into explicit
+  user and App-account allocations;
 - `pay.Users.CreateBindingSession` and `GetBalances`;
 - `pay.Conversions.ListMarkets`, `GetMarket`, `UpdatePrice`, and `CreateQuote`;
 - `pay.Operations.Get` and `List`.
@@ -148,7 +153,7 @@ The webhook secret is separate from the App API secret.
 
 - `client`: authenticated client and API services;
 - `api`: response metadata, API errors, and common JSON types;
-- `channels`, `checkout`, `conversion`, `operation`, `payment`, `payout`, `users`: request and response types;
+- `account`, `channels`, `checkout`, `conversion`, `escrow`, `hold`, `operation`, `payment`, `payout`, `users`: request and response types;
 - `money`: decimal-string monetary values;
 - `webhook`: webhook signature verification and event types.
 

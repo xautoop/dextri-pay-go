@@ -3,6 +3,8 @@ package webhook
 import (
 	"time"
 
+	"github.com/xautoop/dextri-pay-go/escrow"
+	"github.com/xautoop/dextri-pay-go/hold"
 	"github.com/xautoop/dextri-pay-go/operation"
 )
 
@@ -25,6 +27,13 @@ const (
 	EventRefundFailed            EventType = "refund.failed"
 	EventPayoutSucceeded         EventType = "payout.succeeded"
 	EventPayoutFailed            EventType = "payout.failed"
+	EventHoldHeld                EventType = "hold.held"
+	EventHoldFailed              EventType = "hold.failed"
+	EventHoldReleased            EventType = "hold.released"
+	EventEscrowCommitted         EventType = "escrow.committed"
+	EventEscrowFailed            EventType = "escrow.failed"
+	EventSettlementSucceeded     EventType = "escrow_settlement.succeeded"
+	EventSettlementFailed        EventType = "escrow_settlement.failed"
 )
 
 // Event is the signed webhook payload delivered by Dextri Pay.
@@ -43,4 +52,10 @@ type Event struct {
 type EventData struct {
 	// Operation is the latest App-visible operation snapshot.
 	Operation operation.Operation `json:"operation"`
+	// Hold is present for Hold creation and release events.
+	Hold *hold.Hold `json:"hold,omitempty"`
+	// Escrow is present for multi-Hold commit events.
+	Escrow *escrow.Escrow `json:"escrow,omitempty"`
+	// Settlement is present for atomic allocation events.
+	Settlement *escrow.Settlement `json:"settlement,omitempty"`
 }

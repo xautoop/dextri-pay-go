@@ -7,11 +7,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/xautoop/dextri-pay-go/account"
 	"github.com/xautoop/dextri-pay-go/api"
 	"github.com/xautoop/dextri-pay-go/channels"
 	"github.com/xautoop/dextri-pay-go/checkout"
 	"github.com/xautoop/dextri-pay-go/client"
 	"github.com/xautoop/dextri-pay-go/conversion"
+	"github.com/xautoop/dextri-pay-go/escrow"
+	"github.com/xautoop/dextri-pay-go/hold"
 	"github.com/xautoop/dextri-pay-go/operation"
 	"github.com/xautoop/dextri-pay-go/payment"
 	"github.com/xautoop/dextri-pay-go/payout"
@@ -60,6 +63,12 @@ type (
 	paymentRefundMethod        func(*client.PaymentsService, context.Context, string, payment.RefundRequest, ...client.RequestOption) (*payment.Refund, *api.Response, error)
 	payoutCreateMethod         func(*client.PayoutsService, context.Context, payout.CreateRequest, ...client.RequestOption) (*payout.Payout, *api.Response, error)
 	payoutGetMethod            func(*client.PayoutsService, context.Context, string) (*payout.Payout, *api.Response, error)
+	accountBalanceMethod       func(*client.AccountsService, context.Context, string, string) (*account.Balance, *api.Response, error)
+	holdCreateMethod           func(*client.HoldsService, context.Context, hold.CreateRequest, ...client.RequestOption) (*hold.Hold, *api.Response, error)
+	holdGetMethod              func(*client.HoldsService, context.Context, string) (*hold.Hold, *api.Response, error)
+	holdReleaseMethod          func(*client.HoldsService, context.Context, string, hold.ReleaseRequest, ...client.RequestOption) (*hold.Hold, *api.Response, error)
+	escrowCommitMethod         func(*client.EscrowsService, context.Context, escrow.CommitRequest, ...client.RequestOption) (*escrow.Escrow, *api.Response, error)
+	settlementCreateMethod     func(*client.SettlementsService, context.Context, escrow.SettlementRequest, ...client.RequestOption) (*escrow.Settlement, *api.Response, error)
 	tronCreateDepositMethod    func(*client.TronService, context.Context, tron.CreateDepositRequest, ...client.RequestOption) (*tron.Deposit, *api.Response, error)
 	tronCreateWithdrawalMethod func(*client.TronService, context.Context, tron.CreateWithdrawalRequest, ...client.RequestOption) (*tron.Withdrawal, *api.Response, error)
 	usersCreateBindingMethod   func(
@@ -126,6 +135,12 @@ var (
 	_ paymentRefundMethod             = (*client.PaymentsService).Refund
 	_ payoutCreateMethod              = (*client.PayoutsService).Create
 	_ payoutGetMethod                 = (*client.PayoutsService).Get
+	_ accountBalanceMethod            = (*client.AccountsService).GetBalance
+	_ holdCreateMethod                = (*client.HoldsService).Create
+	_ holdGetMethod                   = (*client.HoldsService).Get
+	_ holdReleaseMethod               = (*client.HoldsService).Release
+	_ escrowCommitMethod              = (*client.EscrowsService).Commit
+	_ settlementCreateMethod          = (*client.SettlementsService).Create
 	_ tronCreateDepositMethod         = (*client.TronService).CreateDeposit
 	_ tronCreateWithdrawalMethod      = (*client.TronService).CreateWithdrawal
 	_ usersCreateBindingMethod        = (*client.UsersService).CreateBindingSession
@@ -150,6 +165,10 @@ func assertClientServiceFields(pay *client.Client) {
 	_ = pay.Operations
 	_ = pay.Payments
 	_ = pay.Payouts
+	_ = pay.Accounts
+	_ = pay.Holds
+	_ = pay.Escrows
+	_ = pay.Settlements
 	_ = pay.Tron
 }
 

@@ -108,6 +108,12 @@ App 可以直接展示 `CheckoutURL`，也可以将 `QRPayload` 渲染成二维�
 - `pay.Users.CreateBindingSession` 和 `GetBalances`；
 - `pay.Conversions.ListMarkets`、`GetMarket`、`UpdatePrice` 和 `CreateQuote`；
 - `pay.Operations.Get` 和 `List`。
+- `pay.Accounts.GetBalance`：查询已注册 App 账户的权威余额和资金能力；
+- `pay.Holds.Create`、`Get` 和 `Release`：创建、查询和释放通用资金锁定；
+- `pay.Escrows.Commit`：原子确认一组兼容的 Hold；
+- `pay.Settlements.Create`：原子消费托管资金并分配给明确的用户或 App 账户。
+
+Settlement 请求同时携带展示金额和资产最小单位整数。SDK 在发送请求前校验各笔最小单位金额之和严格等于结算总额；Pay 服务仍负责根据资产精度、账户权限和权威余额做最终校验。
 
 资产、市场、denom 和精度均由 API 根据链上及 Admin 配置返回。SDK 不硬编码币种列表，也不使用浮点数做账务计算。所有金额使用 `money.Decimal`，并以 JSON 字符串传输。
 
@@ -145,7 +151,7 @@ Webhook Secret 与 App API Secret 相互独立。
 
 - `client`：认证客户端和各业务 API；
 - `api`：响应元数据、API 错误和通用 JSON 类型；
-- `channels`、`checkout`、`conversion`、`operation`、`users`：出入参类型；
+- `account`、`channels`、`checkout`、`conversion`、`escrow`、`hold`、`operation`、`users`：出入参类型；
 - `money`：字符串形式的十进制金额；
 - `webhook`：Webhook 验签和事件类型。
 

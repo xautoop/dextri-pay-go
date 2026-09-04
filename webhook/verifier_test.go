@@ -87,6 +87,20 @@ func TestVerifyAcceptsTimestampAtToleranceBoundary(t *testing.T) {
 	}
 }
 
+func TestVerifyDecodesEscrowResourceSnapshot(t *testing.T) {
+	now := time.UnixMilli(1700000000000)
+	body := []byte(`{"id":"evt_escrow","type":"escrow_settlement.succeeded","created_at":"2023-11-14T22:13:20Z","data":{"operation":{"operation_id":"op1","external_user_id":"","type":"escrow_settlement","status":"consumed","created_at":"2023-11-14T22:13:20Z","updated_at":"2023-11-14T22:13:20Z"},"settlement":{"settlement_id":"s1","operation_id":"op1","escrow_id":"e1","asset":"DXS","total_amount":"1000.00","total_amount_atomic":"1000000000","status":"consumed","created_at":"2023-11-14T22:13:20Z","updated_at":"2023-11-14T22:13:20Z"}}}`)
+	headers := signedHeaders("secret", "whd_escrow", "1700000000000", body)
+	delivery, err := (Verifier{Secret: "secret", Now: func() time.Time { return now }}).Verify(headers, body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if delivery.Event.Data.Settlement == nil || delivery.Event.Data.Settlement.SettlementID != "s1" ||
+		delivery.Event.Data.Operation.Type != "escrow_settlement" {
+		t.Fatalf("data=%#v", delivery.Event.Data)
+	}
+}
+
 func FuzzVerifierNeverPanics(f *testing.F) {
 	f.Add("delivery", "1700000000000", "signature", "{}")
 	f.Fuzz(func(t *testing.T, deliveryID, timestamp, signature, body string) {

@@ -29,6 +29,14 @@ type Client struct {
 	Payments *PaymentsService
 	// Payouts creates and reads optional App-funded disbursements.
 	Payouts *PayoutsService
+	// Accounts reads registered App-account balances and capabilities.
+	Accounts *AccountsService
+	// Holds creates, reads and releases generic balance reservations.
+	Holds *HoldsService
+	// Escrows atomically commits compatible Holds.
+	Escrows *EscrowsService
+	// Settlements atomically distributes committed Escrow funds.
+	Settlements *SettlementsService
 	// Tron creates USDT deposit instructions and manually reviewed withdrawals.
 	Tron *TronService
 }
@@ -76,6 +84,10 @@ func New(config Config, supplied ...Option) (*Client, error) {
 		Operations:  newOperationsService(transportClient),
 		Payments:    newPaymentsService(transportClient),
 		Payouts:     newPayoutsService(transportClient),
+		Accounts:    newAccountsService(transportClient),
+		Holds:       newHoldsService(transportClient),
+		Escrows:     newEscrowsService(transportClient),
+		Settlements: newSettlementsService(transportClient),
 		Tron:        newTronService(transportClient),
 	}, nil
 }
